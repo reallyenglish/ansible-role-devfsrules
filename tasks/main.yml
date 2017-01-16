@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-devfsrules
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ devfsrules_log_dir }}"
+    mode: 0755
+    owner: "{{ devfsrules_user }}"
+    group: "{{ devfsrules_group }}"
+    state: directory
+  notify: Restart devfsrules
+
+- name: Create db directory
+  file:
+    path: "{{ devfsrules_db_dir }}"
+    mode: 0755
+    owner: "{{ devfsrules_user }}"
+    group: "{{ devfsrules_group }}"
+    state: directory
+  notify: Restart devfsrules
+
+- name: Create devfsrules.conf
+  template:
+    src: devfsrules.conf.j2
+    dest: "{{ devfsrules_conf_file }}"
+    validate: echo %s
+  notify: Restart devfsrules
+
+- name: Start devfsrules
+  service:
+    name: "{{ devfsrules_service }}"
+    enabled: true
+    state: started

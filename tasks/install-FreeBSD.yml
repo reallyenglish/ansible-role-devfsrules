@@ -1,0 +1,6 @@
+---
+
+- name: Install devfsrules
+  pkgng:
+    name: devfsrules
+    state: present

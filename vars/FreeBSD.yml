@@ -1,0 +1,2 @@
+__devfsrules_db_dir: /var/db/devfsrules
+__devfsrules_conf_dir: /usr/local/etc/devfsrules

@@ -1,0 +1,6 @@
+---
+
+- name: Restart devfsrules
+  service:
+    name: devfsrules
+    state: restarted
