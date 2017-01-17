@@ -1,58 +1,38 @@
-require 'spec_helper'
-require 'serverspec'
+require "spec_helper"
 
-package = 'devfsrules'
-service = 'devfsrules'
-config  = '/etc/devfsrules/devfsrules.conf'
-user    = 'devfsrules'
-group   = 'devfsrules'
-ports   = [ PORTS ]
-log_dir = '/var/log/devfsrules'
-db_dir  = '/var/lib/devfsrules'
+config  = "/etc/devfs.rules"
 
-case os[:family]
-when 'freebsd'
-  config = '/usr/local/etc/devfsrules.conf'
-  db_dir = '/var/db/devfsrules'
-end
+rules = <<'__EOF__'
+# Managed by ansible
+[devfsrules_jail_with_bpf=100]
+add include $devfsrules_hide_all
+add include $devfsrules_unhide_basic
+add include $devfsrules_unhide_login
+add path 'bpf*' unhide
+add path 'net*' unhide
+add path 'tun*' unhide
 
-describe package(package) do
-  it { should be_installed }
-end 
+[my_rule=999]
+add path 'tun*' hide
+__EOF__
 
 describe file(config) do
   it { should be_file }
-  its(:content) { should match Regexp.escape('devfsrules') }
+  its(:content) { should match(/#{ Regexp.escape(rules) }/) }
 end
 
-describe file(log_dir) do
-  it { should exist }
-  it { should be_mode 755 }
-  it { should be_owned_by user }
-  it { should be_grouped_into group }
+describe file("/etc/rc.conf") do
+  it { should be_file }
+  its(:content) { should match(/^devfs_system_ruleset="my_rule"$/) }
 end
 
-describe file(db_dir) do
-  it { should exist }
-  it { should be_mode 755 }
-  it { should be_owned_by user }
-  it { should be_grouped_into group }
+describe command("devfs rule -s 999 show") do
+  its(:exit_status) { should eq 0 }
+  its(:stderr) { should match(/^$/) }
+  its(:stdout) { should match(/^100 path tun\* hide$/) }
+  its(:stdout) { should match(/^200 path led\/em0 hide$/) }
 end
 
-case os[:family]
-when 'freebsd'
-  describe file('/etc/rc.conf.d/devfsrules') do
-    it { should be_file }
-  end
-end
-
-describe service(service) do
-  it { should be_running }
-  it { should be_enabled }
-end
-
-ports.each do |p|
-  describe port(p) do
-    it { should be_listening }
-  end
+describe file("/dev/led/em0") do
+  it { should_not exist }
 end

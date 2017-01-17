@@ -1,37 +1,24 @@
 ---
 # tasks file for ansible-role-devfsrules
 
-- include_vars: "{{ ansible_os_family }}.yml"
-
-- include: "install-{{ ansible_os_family }}.yml"
-
-- name: Create log directory
-  file:
-    path: "{{ devfsrules_log_dir }}"
-    mode: 0755
-    owner: "{{ devfsrules_user }}"
-    group: "{{ devfsrules_group }}"
-    state: directory
-  notify: Restart devfsrules
-
-- name: Create db directory
-  file:
-    path: "{{ devfsrules_db_dir }}"
-    mode: 0755
-    owner: "{{ devfsrules_user }}"
-    group: "{{ devfsrules_group }}"
-    state: directory
-  notify: Restart devfsrules
-
-- name: Create devfsrules.conf
+- name: Create devfsrules_file
   template:
-    src: devfsrules.conf.j2
-    dest: "{{ devfsrules_conf_file }}"
-    validate: echo %s
-  notify: Restart devfsrules
+    src: devfs.rules.j2
+    dest: "{{ devfsrules_file }}"
+  notify: Restart devfs
 
-- name: Start devfsrules
-  service:
-    name: "{{ devfsrules_service }}"
-    enabled: true
-    state: started
+- name: Replace devfs_system_ruleset
+  lineinfile:
+    dest: /etc/rc.conf
+    regexp: "^devfs_system_ruleset="
+    line: "devfs_system_ruleset=\"{{ devfsrules_devfs_system_ruleset | join(' ') }}\""
+  when: devfsrules_devfs_system_ruleset | length > 0
+  notify: Restart devfs
+
+- name: Remove devfs_system_ruleset when devfsrules_devfs_system_ruleset is empty
+  lineinfile:
+    dest: /etc/rc.conf
+    regexp: "^devfs_system_ruleset=.*"
+    state: absent
+  when: devfsrules_devfs_system_ruleset | length == 0
+  notify: Restart devfs

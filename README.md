@@ -1,6 +1,6 @@
 # ansible-role-devfsrules
 
-A brief description of the role goes here.
+Manage devfs.rules(5) in FreeBSD
 
 # Requirements
 
@@ -8,9 +8,22 @@ None
 
 # Role Variables
 
-| variable | description | default |
+| Variable | Description | Default |
 |----------|-------------|---------|
+| `devfsrules_file` | path to `devfs.rules` | `/etc/devfs.rules` |
+| `devfsrules` | list of [`devfs.rules(5)`](http://man.freebsd.org/devfs.rules). see below. | `[]` |
+| `devfsrules_devfs_system_ruleset` | list of rule sets to apply the system, see `devfs_system_ruleset` in [`rc.conf`](http://man.freebsd.org/rc.conf) | `[]` |
 
+## `devfsrules`
+
+This variable is a list of dict. Each list element must have a dict with the
+following keys and values.
+
+| Key | Description |
+|-----|-------------|
+| name | name of the rule |
+| number | rule number |
+| rules | the rules |
 
 # Dependencies
 
@@ -19,6 +32,28 @@ None
 # Example Playbook
 
 ```yaml
+- hosts: localhost
+  roles:
+    - ansible-role-devfsrules
+  vars:
+    devfsrules:
+      - name: devfsrules_jail_with_bpf
+        number: 100
+        rules: |
+          add include $devfsrules_hide_all
+          add include $devfsrules_unhide_basic
+          add include $devfsrules_unhide_login
+          add path 'bpf*' unhide
+          add path 'net*' unhide
+          add path 'tun*' unhide
+      - name: my_rule
+        number: 999
+        rules: |
+          add path 'tun*' hide
+          # choose a device that exists in the VM and is safe to hide
+          add path led/em0 hide
+    devfsrules_devfs_system_ruleset:
+      - my_rule
 ```
 
 # License

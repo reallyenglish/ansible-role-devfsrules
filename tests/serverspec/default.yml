@@ -2,4 +2,21 @@
   roles:
     - ansible-role-devfsrules
   vars:
-    devfsrules_config: ""
+    devfsrules:
+      - name: devfsrules_jail_with_bpf
+        number: 100
+        rules: |
+          add include $devfsrules_hide_all
+          add include $devfsrules_unhide_basic
+          add include $devfsrules_unhide_login
+          add path 'bpf*' unhide
+          add path 'net*' unhide
+          add path 'tun*' unhide
+      - name: my_rule
+        number: 999
+        rules: |
+          add path 'tun*' hide
+          # choose a device that exists in the VM and is safe to hide
+          add path led/em0 hide
+    devfsrules_devfs_system_ruleset:
+      - my_rule

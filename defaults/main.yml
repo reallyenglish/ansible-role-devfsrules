@@ -1,8 +1,3 @@
-devfsrules_user: devfsrules
-devfsrules_group: devfsrules
-devfsrules_log_dir: /var/log/devfsrules
-devfsrules_db_dir: "{{ __devfsrules_db_dir }}"
-devfsrules_service: devfsrules
-devfsrules_conf_dir: "{{ __devfsrules_conf_dir }}"
-devfsrules_conf_file: "{{ __devfsrules_conf_dir }}/devfsrules.conf"
-devfsrules_flags: ""
+devfsrules_file: /etc/devfs.rules
+devfsrules: []
+devfsrules_devfs_system_ruleset: []

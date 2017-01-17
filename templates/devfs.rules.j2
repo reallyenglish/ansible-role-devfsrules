@@ -1,0 +1,5 @@
+# Managed by ansible
+{% for r in devfsrules %}
+[{{ r.name }}={{ r.number }}]
+{{ r.rules }}
+{% endfor %}
