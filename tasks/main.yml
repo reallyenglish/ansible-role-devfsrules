@@ -5,20 +5,27 @@
   template:
     src: devfs.rules.j2
     dest: "{{ devfsrules_file }}"
-  notify: Restart devfs
+  register: register_devfsrules_file
 
 - name: Replace devfs_system_ruleset
   lineinfile:
     dest: /etc/rc.conf
     regexp: "^devfs_system_ruleset="
     line: "devfs_system_ruleset=\"{{ devfsrules_devfs_system_ruleset | join(' ') }}\""
+  register: register_devfsrules_system_replace
   when: devfsrules_devfs_system_ruleset | length > 0
-  notify: Restart devfs
 
 - name: Remove devfs_system_ruleset when devfsrules_devfs_system_ruleset is empty
   lineinfile:
     dest: /etc/rc.conf
     regexp: "^devfs_system_ruleset=.*"
     state: absent
+  register: register_devfsrules_system_remove
   when: devfsrules_devfs_system_ruleset | length == 0
-  notify: Restart devfs
+
+- name: Restart devfs
+  service:
+    name: devfs
+    state: restarted
+  when:
+    - register_devfsrules_file.changed or register_devfsrules_system_replace.changed or register_devfsrules_system_remove.changed
