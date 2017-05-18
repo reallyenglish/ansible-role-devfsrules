@@ -23,7 +23,7 @@ end
 
 describe file("/etc/rc.conf") do
   it { should be_file }
-  its(:content) { should match(/^devfs_system_ruleset="my_rule"$/) }
+  its(:content) { should match(/^devfs_system_ruleset="permit_bpf my_rule"$/) }
 end
 
 describe command("devfs rule -s 999 show") do
