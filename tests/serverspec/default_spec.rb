@@ -1,6 +1,6 @@
 require "spec_helper"
 
-config  = "/etc/devfs.rules"
+config = "/etc/devfs.rules"
 
 rules = <<'__EOF__'
 # Managed by ansible
@@ -30,7 +30,7 @@ describe command("devfs rule -s 999 show") do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should match(/^$/) }
   its(:stdout) { should match(/^100 path tun\* hide$/) }
-  its(:stdout) { should match(/^200 path led\/em0 hide$/) }
+  its(:stdout) { should match(%r{^200 path led/em0 hide$}) }
 end
 
 describe file("/dev/led/em0") do
