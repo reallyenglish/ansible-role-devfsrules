@@ -36,7 +36,7 @@ end
 
 desc "import required roles"
 task :prepare_roles do
-  sh "ansible-galaxy install -r requirements.yml -p roles"
+  sh "if [ -f requirements.yml ]; then ansible-galaxy install -r requirements.yml -p roles; fi"
 end
 
 desc "clean up required roles"
@@ -54,8 +54,7 @@ task :prepare_role do
   tmpfile = Tempfile.new(".tarignore")
   tmpfile.write ignore.join("\n")
   tmpfile.close
-  sh "tar -c -X #{tmpfile.path} -C #{role_dir.parent} -f - #{role_name} | "
-  + "tar -x -C #{test_dir}/roles -f -"
+  sh "tar -c -X #{tmpfile.path} -C #{role_dir.parent} -f - #{role_name} | " + "tar -x -C #{test_dir}/roles -f -"
 end
 
 desc "vagrant up"
