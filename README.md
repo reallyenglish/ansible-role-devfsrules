@@ -12,7 +12,7 @@ None
 |----------|-------------|---------|
 | `devfsrules_file` | path to `devfs.rules` | `/etc/devfs.rules` |
 | `devfsrules` | list of [`devfs.rules(5)`](http://man.freebsd.org/devfs.rules). see below. | `[]` |
-| `devfsrules_devfs_system_ruleset` | a rule set to apply to /dev on the system, see `devfs_system_ruleset` in [`rc.conf`](http://man.freebsd.org/rc.conf) | `[]` |
+| `devfsrules_devfs_system_ruleset` | a rule set to apply to /dev on the system, see `devfs_system_ruleset` in [`rc.conf`](http://man.freebsd.org/rc.conf) | `""` |
 
 ## `devfsrules`
 
