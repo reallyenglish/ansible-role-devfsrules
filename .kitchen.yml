@@ -41,3 +41,14 @@ suites:
     verifier:
       name: shell
       command: rspec -c -f d -I tests/serverspec tests/serverspec/default_spec.rb
+
+  - name: empty_devfsrules_devfs_system_ruleset
+    provisioner:
+      name: ansible_playbook
+      playbook: tests/serverspec/empty_devfsrules_devfs_system_ruleset.yml
+
+      # XXX disable idempotency_test as this test always change the system
+      idempotency_test: false
+    verifier:
+      name: shell
+      command: rspec -c -f d -I tests/serverspec tests/serverspec/empty_devfsrules_devfs_system_ruleset_spec.rb

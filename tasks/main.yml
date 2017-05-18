@@ -11,7 +11,7 @@
   lineinfile:
     dest: /etc/rc.conf
     regexp: "^devfs_system_ruleset="
-    line: "devfs_system_ruleset=\"{{ devfsrules_devfs_system_ruleset | join(' ') }}\""
+    line: "devfs_system_ruleset=\"{{ devfsrules_devfs_system_ruleset }}\""
   register: register_devfsrules_system_replace
   when: devfsrules_devfs_system_ruleset | length > 0
 

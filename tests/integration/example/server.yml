@@ -15,8 +15,7 @@
           add path 'bpf' user root
           add path 'bpf' group network
           add path 'bpf' mode 660
-    devfsrules_devfs_system_ruleset:
-      - permit_bpf
+    devfsrules_devfs_system_ruleset: permit_bpf
   pre_tasks:
   roles:
     - ansible-role-devfsrules

@@ -23,7 +23,7 @@ end
 
 describe file("/etc/rc.conf") do
   it { should be_file }
-  its(:content) { should match(/^devfs_system_ruleset="permit_bpf my_rule"$/) }
+  its(:content) { should match(/^devfs_system_ruleset="my_rule"$/) }
 end
 
 describe command("devfs rule -s 999 show") do
@@ -31,8 +31,17 @@ describe command("devfs rule -s 999 show") do
   its(:stderr) { should match(/^$/) }
   its(:stdout) { should match(/^100 path tun\* hide$/) }
   its(:stdout) { should match(%r{^200 path led/em0 hide$}) }
+  its(:stdout) { should match(/^300 path bpf user root$/) }
+  its(:stdout) { should match(/^400 path bpf group network$/) }
+  its(:stdout) { should match(/^500 path bpf mode 660$/) }
 end
 
 describe file("/dev/led/em0") do
   it { should_not exist }
+end
+
+describe file("/dev/bpf") do
+  it { should be_mode 660 }
+  it { should be_owned_by "root" }
+  it { should be_grouped_into "network" }
 end
