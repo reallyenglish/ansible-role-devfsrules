@@ -55,8 +55,7 @@ None
           add path 'bpf' user root
           add path 'bpf' group network
           add path 'bpf' mode 660
-    devfsrules_devfs_system_ruleset:
-      - my_rule
+    devfsrules_devfs_system_ruleset: my_rule
 ```
 
 # License
