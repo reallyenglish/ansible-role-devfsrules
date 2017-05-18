@@ -12,6 +12,12 @@
           add path 'bpf*' unhide
           add path 'net*' unhide
           add path 'tun*' unhide
+      - name: permit_bpf
+        number: 200
+        rules: |
+          add path 'bpf' user root
+          add path 'bpf' group network
+          add path 'bpf' mode 660
       - name: my_rule
         number: 999
         rules: |
@@ -19,4 +25,5 @@
           # choose a device that exists in the VM and is safe to hide
           add path led/em0 hide
     devfsrules_devfs_system_ruleset:
+      - permit_bpf
       - my_rule
