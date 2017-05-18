@@ -1,4 +1,11 @@
 - hosts: localhost
+  pre_tasks:
+    # test if the role removes devfs_system_ruleset from rc.conf(5) when
+    # devfsrules_devfs_system_ruleset is ""
+    - shell: "echo devfs_system_ruleset=foo | sudo tee -a /etc/rc.conf"
+      changed_when: false
+    - command: "grep devfs_system_ruleset /etc/rc.conf"
+      changed_when: false
   roles:
     - ansible-role-devfsrules
   vars:
@@ -21,4 +28,3 @@
           add path 'bpf' user root
           add path 'bpf' group network
           add path 'bpf' mode 660
-    devfsrules_devfs_system_ruleset: my_rule

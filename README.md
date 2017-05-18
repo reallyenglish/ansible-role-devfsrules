@@ -12,7 +12,7 @@ None
 |----------|-------------|---------|
 | `devfsrules_file` | path to `devfs.rules` | `/etc/devfs.rules` |
 | `devfsrules` | list of [`devfs.rules(5)`](http://man.freebsd.org/devfs.rules). see below. | `[]` |
-| `devfsrules_devfs_system_ruleset` | list of rule sets to apply the system, see `devfs_system_ruleset` in [`rc.conf`](http://man.freebsd.org/rc.conf) | `[]` |
+| `devfsrules_devfs_system_ruleset` | a rule set to apply to /dev on the system, see `devfs_system_ruleset` in [`rc.conf`](http://man.freebsd.org/rc.conf) | `""` |
 
 ## `devfsrules`
 
@@ -52,8 +52,10 @@ None
           add path 'tun*' hide
           # choose a device that exists in the VM and is safe to hide
           add path led/em0 hide
-    devfsrules_devfs_system_ruleset:
-      - my_rule
+          add path 'bpf' user root
+          add path 'bpf' group network
+          add path 'bpf' mode 660
+    devfsrules_devfs_system_ruleset: my_rule
 ```
 
 # License
