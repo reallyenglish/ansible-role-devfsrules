@@ -46,7 +46,6 @@ describe command("devfs rule -s 200 show") do
   its(:stdout) { should match(/^400 path urandom unhide$/) }
 end
 
-
 describe file("/dev/led/em0") do
   it { should_not exist }
 end
@@ -63,19 +62,19 @@ end
     it { should be_mounted }
     it do
       pending "does not work with specinfra 2.63.2"
-      should be_mounted.with(:type => "devfs")
+      should be_mounted.with(type: "devfs")
     end
     it do
       pending "does not work with specinfra 2.63.2"
-      should be_mounted.with(:options => { :rw => true })
+      should be_mounted.with(options: { rw: true })
     end
   end
 
-  [
-    "null",
-    "random",
-    "zero"
-  ].each do |f|
+  %w(
+    null
+    random
+    zero
+  ).each do |f|
     describe file("/chroot#{i}/dev/#{f}") do
       it { should exist }
       it { should be_character_device }
