@@ -24,6 +24,7 @@ end
 describe file("/etc/rc.conf") do
   it { should be_file }
   its(:content) { should match(/^devfs_system_ruleset="my_rule"$/) }
+  its(:content) { should match(/^devfs_set_rulesets="#{Regexp.escape("/chroot1/dev=chroot /chroot2/dev=chroot")} "/) }
 end
 
 describe command("devfs rule -s 999 show") do
@@ -44,4 +45,40 @@ describe file("/dev/bpf") do
   it { should be_mode 660 }
   it { should be_owned_by "root" }
   it { should be_grouped_into "network" }
+end
+
+1.upto(2).each do |i|
+  describe file("/chroot#{i}/dev") do
+    it { should exist }
+    it { should be_mounted }
+    it do
+      pending "does not work with specinfra 2.63.2"
+      should be_mounted.with(:type => "devfs")
+    end
+    it do
+      pending "does not work with specinfra 2.63.2"
+      should be_mounted.with(:options => { :rw => true })
+    end
+  end
+
+  [
+    "null",
+    "random",
+    "zero"
+  ].each do |f|
+    describe file("/chroot#{i}/dev/#{f}") do
+      it { should exist }
+      it { should be_character_device }
+      it { should be_mode 666 }
+    end
+  end
+  describe file("/chroot#{i}/dev/urandom") do
+    it { should exist }
+    it { should be_symlink }
+  end
+end
+
+describe file("/foo/bar") do
+  it { should_not exist }
+  it { should_not be_mounted }
 end
