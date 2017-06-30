@@ -15,6 +15,46 @@
   register: register_devfsrules_system_replace
   when: devfsrules_devfs_system_ruleset | length > 0
 
+- assert:
+    that:
+      - "'path' in item"
+      - "'state' in item"
+      - "'name' in item"
+      - "item.state == 'present' or item.state == 'absent'"
+  with_items: "{{ devfsrules_devfs_set_rulesets }}"
+
+- name: Mount devfs
+  mount:
+    fstype: devfs
+    name: "{{ item.path }}"
+    opts: rw
+    src: "none"
+    state: mounted
+  register: register_devfsrules_mount
+  with_items: "{{ devfsrules_devfs_set_rulesets }}"
+  when:
+    - "item.state == 'present'"
+
+- name: Unmount devfs
+  mount:
+    fstype: devfs
+    name: "{{ item.path }}"
+    state: unmounted
+  register: register_devfsrules_unmount
+  with_items: "{{ devfsrules_devfs_set_rulesets }}"
+  when:
+    - "item.state == 'absent'"
+
+- set_fact:
+    devfs_set_rulesets_line: "{% for i in devfsrules_devfs_set_rulesets | selectattr('state', 'equalto', 'present') | list %}{{ i.path + '=' + i.name + ' ' }}{% endfor %}"
+
+- name: Replace devfs_set_rulesets
+  lineinfile:
+    dest: /etc/rc.conf
+    regexp: "^devfs_set_rulesets="
+    line: "devfs_set_rulesets=\"{{ devfs_set_rulesets_line | trim }}\""
+  register: register_devfsrules_set_rulesets_replace
+
 - name: Remove devfs_system_ruleset when devfsrules_devfs_system_ruleset is empty
   lineinfile:
     dest: /etc/rc.conf
@@ -28,4 +68,4 @@
     name: devfs
     state: restarted
   when:
-    - register_devfsrules_file.changed or register_devfsrules_system_replace.changed or register_devfsrules_system_remove.changed
+    - register_devfsrules_file.changed or register_devfsrules_system_replace.changed or register_devfsrules_system_remove.changed or register_devfsrules_set_rulesets_replace.changed

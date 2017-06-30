@@ -1,0 +1,16 @@
+- hosts: localhost
+  roles:
+    - ansible-role-devfsrules
+  pre_tasks:
+    - name: Mount /foo/bar
+      mount:
+        fstype: devfs
+        name: /foo/bar
+        opts: rw
+        src: "none"
+        state: mounted
+  vars:
+    devfsrules_devfs_set_rulesets:
+      - path: /foo/bar
+        name: nothing
+        state: absent
