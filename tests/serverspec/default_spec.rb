@@ -60,12 +60,9 @@ end
   describe file("/chroot#{i}/dev") do
     it { should exist }
     it { should be_mounted }
+    it { should be_mounted.with(type: "devfs") }
     it do
-      pending "does not work with specinfra 2.63.2"
-      should be_mounted.with(type: "devfs")
-    end
-    it do
-      pending "does not work with specinfra 2.63.2"
+      pending "does not work with specinfra 2.68.1"
       should be_mounted.with(options: { rw: true })
     end
   end
