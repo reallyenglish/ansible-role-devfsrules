@@ -24,7 +24,7 @@ end
 describe file("/etc/rc.conf") do
   it { should be_file }
   its(:content) { should match(/^devfs_system_ruleset="my_rule"$/) }
-  its(:content) { should match(/^devfs_set_rulesets="#{Regexp.escape("/chroot1/dev=chroot /chroot2/dev=chroot")} "/) }
+  its(:content) { should match(/^devfs_set_rulesets="#{Regexp.escape("/chroot1/dev=chroot /chroot2/dev=chroot")}"/) }
 end
 
 describe command("devfs rule -s 999 show") do

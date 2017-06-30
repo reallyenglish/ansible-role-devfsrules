@@ -52,7 +52,7 @@
   lineinfile:
     dest: /etc/rc.conf
     regexp: "^devfs_set_rulesets="
-    line: "devfs_set_rulesets=\"{{ devfs_set_rulesets_line }}\""
+    line: "devfs_set_rulesets=\"{{ devfs_set_rulesets_line | trim }}\""
   register: register_devfsrules_set_rulesets_replace
 
 - name: Remove devfs_system_ruleset when devfsrules_devfs_system_ruleset is empty
