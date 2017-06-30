@@ -37,6 +37,16 @@ describe command("devfs rule -s 999 show") do
   its(:stdout) { should match(/^500 path bpf mode 660$/) }
 end
 
+describe command("devfs rule -s 200 show") do
+  its(:exit_status) { should eq 0 }
+  its(:stderr) { should eq "" }
+  its(:stdout) { should match(/^100 include 1$/) }
+  its(:stdout) { should match(/^200 include 2$/) }
+  its(:stdout) { should match(/^300 path random unhide$/) }
+  its(:stdout) { should match(/^400 path urandom unhide$/) }
+end
+
+
 describe file("/dev/led/em0") do
   it { should_not exist }
 end
