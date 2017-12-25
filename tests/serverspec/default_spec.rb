@@ -67,11 +67,11 @@ end
     end
   end
 
-  %w(
+  %w[
     null
     random
     zero
-  ).each do |f|
+  ].each do |f|
     describe file("/chroot#{i}/dev/#{f}") do
       it { should exist }
       it { should be_character_device }
